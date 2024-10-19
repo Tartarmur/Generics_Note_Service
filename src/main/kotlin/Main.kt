@@ -8,7 +8,8 @@ data class Note (
 
 data class Comment (
     val id: Int,
-    var text: String
+    var text: String,
+    //var checkDeleted: Boolean
 )
 
 class NoteNotFoundException (message: String) : RuntimeException (message)
@@ -24,7 +25,7 @@ class NoteService {
         return notes.last()
     }
 
-    fun editNote (id: Int, text: String) : Note {
+    fun editNote(id: Int, text: String): Note {
         for ((index, note) in notes.withIndex()) {
             if (notes[index].id == id) {
                 note.text = text
@@ -38,10 +39,10 @@ class NoteService {
         for ((index, note) in notes.withIndex()) {
             if (notes[index].id == id) {
                 notes.remove(note)
-               return true
+                return true
             }
         }
-        return false
+        return throw NoteNotFoundException("Нет похожего $id")
     }
 
     fun createComment(noteID: Int, comment: Comment): Comment {
@@ -55,36 +56,47 @@ class NoteService {
         return throw NoteNotFoundException("Нет похожего $noteID")
     }
 
-    fun editComment(noteID: Int, comment: Comment, text: String): Comment {
-        for ((index, note) in notes.withIndex()) {
-            if (notes[index].id == noteID) {
-                comment.text = text
-                return comments.last()
-            }
+    fun editComment(commentID: Int, text: String): Comment {
+        //for ((index, note) in notes.withIndex()) {
+            for ((index, comment) in comments.withIndex()) {
+                //if (notes[index].id == noteID) {
+                    if (comments[index].id == commentID) {
+                        comment.text = text
+                        return comments.last()
+                    }
+               // }
+            //}
         }
-        return throw NoteNotFoundException("Нет похожего $noteID")
+        return throw NoteNotFoundException("Нет похожего $commentID")
     }
 
-    fun deleteComment(noteID: Int, comment: Comment): Comment {
-        for ((index, note) in notes.withIndex()) {
-            if (notes[index].id == noteID) {
-                comments.remove(comment)
-                deleteComments.add(comment)
-                return comments.last()
-            }
-        }
-        return throw NoteNotFoundException("Нет похожего $noteID")
+    fun deleteComment(commentID: Int): Boolean {
+        //for ((index, note) in notes.withIndex()) {
+            for ((index, comment) in comments.withIndex()) {
+                //if (notes[index].id == noteID) {
+                if (comments[index].id == commentID){
+                        comments.remove(comment)
+                        deleteComments.add(comment)
+                        return true
+                    }
+                }
+            //}
+
+        return throw NoteNotFoundException("Нет похожего $commentID")
     }
 
-    fun restoreComment(noteID: Int, deleteComment: Comment): Comment {
-        for ((index, note) in notes.withIndex()) {
-            if (notes[index].id == noteID) {
-                deleteComments.remove(deleteComment)
-                comments.add(deleteComment)
-                return comments.last()
+    fun restoreComment(commentID: Int): Comment {
+        //for ((index, note) in notes.withIndex()) {
+            for ((index, comment) in deleteComments.withIndex()) {
+                //if (notes[index].id == noteID) {
+                  if (deleteComments[index].id == commentID){
+                    deleteComments.remove(comment)
+                    comments.add(comment)
+                    return comments.last()
+                }
             }
-        }
-        return throw NoteNotFoundException("Нет похожего $noteID")
+        //}
+        return throw NoteNotFoundException("Нет похожего $commentID")
     }
 
     fun getNoteById(id: Int): Note? {
@@ -106,6 +118,13 @@ class NoteService {
             print(comment)
         println()
     }
+
+
+    fun checkDeleteComments() {
+        for (comment in deleteComments)
+            print(comment)
+        println()
+    }
 }
 
 
@@ -120,10 +139,13 @@ fun main() {
     service.deleteNote(3)
     service.readNotes()
     service.createComment(2, Comment(1,"Оплатил счетчики за воду"))
-    service.createComment(1, Comment(1,"Купил продукты на 3 дня"))
-    service.editComment(1,Comment(1, "Что то не то"), "двойной текст")
-    service.createComment(2, Comment(2, "Комментарий на удаление"))
-    service.deleteComment(2, Comment(2,"Не нужный текст"))
+    service.createComment(1, Comment(2,"Купил продукты на 3 дня"))
+    service.createComment(1, Comment(3, "Комментарий на удаление"))
     service.readComments()
-    println("Hello World!")
+    service.editComment (1, "Оплатил счет не только за воду, но и за электричество!")
+    service.deleteComment(3)
+    service.readComments()
+    service.checkDeleteComments()
+    service.restoreComment(1)
+    service.readComments()
 }
