@@ -12,7 +12,7 @@ class NoteServiceTest {
         var checkresult = NoteService()
         val createNote = checkresult.addNote(Note(1, "Прекрасный день"))
         val createComment = checkresult.createComment(1, Comment(1, "Чудесный день!"))
-        val deleteComment = checkresult.deleteComment(5)
+        val deleteComment = checkresult.deleteComment(1,5)
     }
 
 
@@ -21,7 +21,7 @@ class NoteServiceTest {
         var checkresult = NoteService()
         val createNote = checkresult.addNote(Note(1, "Прекрасный день"))
         val createComment = checkresult.createComment(1, Comment(1, "Чудесный день!"))
-        val deleteComment = checkresult.deleteComment(1)
+        val deleteComment = checkresult.deleteComment(1,1)
     }
 
     @Test
@@ -30,8 +30,8 @@ class NoteServiceTest {
         val createNote = checkresult.addNote(Note(1, "Прекрасный день"))
         val createComment = checkresult.createComment(1, Comment(1, "Чудесный день!"))
         val newComment = checkresult.createComment(1, Comment(2,"Замечательный день!"))
-        val deleteComment = checkresult.deleteComment(1)
-        val restoreComment = checkresult.restoreComment(1)
+        val deleteComment = checkresult.deleteComment(1,2)
+        val restoreComment = checkresult.restoreComment(1,2)
     }
 
 
@@ -41,8 +41,8 @@ class NoteServiceTest {
         val createNote = checkresult.addNote(Note(1, "Прекрасный день"))
         val createComment = checkresult.createComment(1, Comment(1, "Чудесный день!"))
         val newComment = checkresult.createComment(1, Comment(2,"Замечательный день!"))
-        val deleteComment = checkresult.deleteComment(1)
-        val restoreComment = checkresult.restoreComment(5)
+        val deleteComment = checkresult.deleteComment(1,2)
+        val restoreComment = checkresult.restoreComment(1,5)
     }
 
 }

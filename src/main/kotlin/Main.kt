@@ -18,10 +18,10 @@ class NoteService {
     private var notes = mutableListOf<Note>()
     private var comments = mutableListOf<Comment>()
     private var deleteComments = mutableListOf<Comment>()
-    private var unicumID = 0
+    private var unicumNoteID = 0
 
     fun addNote(note: Note): Note {
-        notes += note.copy(id = ++unicumID)
+        notes += note.copy(id = ++unicumNoteID)
         return notes.last()
     }
 
@@ -49,59 +49,61 @@ class NoteService {
         for ((index, note) in notes.withIndex()) {
             if (notes[index].id == noteID) {
                 comments.add(comment)
-                //comments += note.copy(text = comment.text)
                 return comments.last()
             }
         }
         return throw NoteNotFoundException("Нет похожего $noteID")
     }
 
-    fun editComment(commentID: Int, text: String): Comment {
-        //for ((index, note) in notes.withIndex()) {
+    fun editComment(noteID: Int, commentID: Int, text: String): Comment {
+        for ((index, note) in notes.withIndex()) {
+            if (notes[index].id == noteID){
             for ((index, comment) in comments.withIndex()) {
-                //if (notes[index].id == noteID) {
                     if (comments[index].id == commentID) {
                         comment.text = text
                         return comments.last()
                     }
-               // }
-            //}
+                }
+            }
         }
         return throw NoteNotFoundException("Нет похожего $commentID")
     }
 
-    fun deleteComment(commentID: Int): Boolean {
-        //for ((index, note) in notes.withIndex()) {
-            for ((index, comment) in comments.withIndex()) {
-                //if (notes[index].id == noteID) {
-                if (comments[index].id == commentID){
-                        comments.remove(comment)
-                        deleteComments.add(comment)
-                        return true
-                    }
-                }
-            //}
-
+    fun deleteComment(noteID: Int, commentID: Int): Boolean {
+         for ((index, note) in notes.withIndex()) {
+             if (notes[index].id == noteID) {
+                 for ((index, comment) in comments.withIndex()) {
+                     if (comments[index].id == commentID) {
+                         comments.remove(comment)
+                         deleteComments.add(comment)
+                         return true
+                     }
+                 }
+             }
+         }
         return throw NoteNotFoundException("Нет похожего $commentID")
     }
 
-    fun restoreComment(commentID: Int): Comment {
-        //for ((index, note) in notes.withIndex()) {
-            for ((index, comment) in deleteComments.withIndex()) {
-                //if (notes[index].id == noteID) {
-                  if (deleteComments[index].id == commentID){
-                    deleteComments.remove(comment)
-                    comments.add(comment)
-                    return comments.last()
-                }
-            }
-        //}
+    fun restoreComment(noteID: Int, commentID: Int): Comment {
+         for ((index, note) in notes.withIndex()) {
+             if (notes[index].id == noteID) {
+                 for ((index, comment) in deleteComments.withIndex()) {
+                     if (deleteComments[index].id == commentID) {
+                         deleteComments.remove(comment)
+                         comments.add(comment)
+                         return comments.last()
+                     }
+                 }
+             }
+         }
         return throw NoteNotFoundException("Нет похожего $commentID")
     }
 
     fun getNoteById(id: Int): Note? {
         for ((index, note) in notes.withIndex()) {
-            return notes.find { it.id == id }
+            var findNote = notes.find {it.id == id }
+            println("Заметка найдена " + findNote)
+            return findNote
         }
         return throw NoteNotFoundException("Нет такой заметки с таким $id")
     }
@@ -136,16 +138,18 @@ fun main() {
     service.addNote(Note(2,"Оплатить ЖКХ"))
     service.editNote(2,"Оплатить не только ЖКХ!")
     service.addNote(Note(3, "Заметка на удаление"))
+    service.readNotes()
     service.deleteNote(3)
     service.readNotes()
+    service.getNoteById(2)
     service.createComment(2, Comment(1,"Оплатил счетчики за воду"))
     service.createComment(1, Comment(2,"Купил продукты на 3 дня"))
     service.createComment(1, Comment(3, "Комментарий на удаление"))
     service.readComments()
-    service.editComment (1, "Оплатил счет не только за воду, но и за электричество!")
-    service.deleteComment(3)
+    service.editComment (2, 1,"Оплатил счет не только за воду, но и за электричество!")
+    service.deleteComment(1,3)
     service.readComments()
     service.checkDeleteComments()
-    service.restoreComment(1)
+    service.restoreComment(1,3)
     service.readComments()
 }
