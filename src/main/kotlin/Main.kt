@@ -8,8 +8,8 @@ data class Note (
 
 data class Comment (
     val id: Int,
-    var text: String,
-    //var checkDeleted: Boolean
+    val noteID: Int,
+    var text: String
 )
 
 class NoteNotFoundException (message: String) : RuntimeException (message)
@@ -19,6 +19,7 @@ class NoteService {
     private var comments = mutableListOf<Comment>()
     private var deleteComments = mutableListOf<Comment>()
     private var unicumNoteID = 0
+    private var unicumCommentID = 0
 
     fun addNote(note: Note): Note {
         notes += note.copy(id = ++unicumNoteID)
@@ -45,14 +46,12 @@ class NoteService {
         return throw NoteNotFoundException("Нет похожего $id")
     }
 
-    fun createComment(noteID: Int, comment: Comment): Comment {
+    fun createComment(comment: Comment): Comment {
+       comments += comment.copy(id = ++unicumCommentID)
         for ((index, note) in notes.withIndex()) {
-            if (notes[index].id == noteID) {
-                comments.add(comment)
                 return comments.last()
-            }
         }
-        return throw NoteNotFoundException("Нет похожего $noteID")
+        return throw NoteNotFoundException("Нет похожего ID")
     }
 
     fun editComment(noteID: Int, commentID: Int, text: String): Comment {
@@ -99,6 +98,12 @@ class NoteService {
         return throw NoteNotFoundException("Нет похожего $commentID")
     }
 
+    fun getNotes() : Collection<Note> {
+        for (note in notes)
+            println(note)
+        return notes
+    }
+
     fun getNoteById(id: Int): Note? {
         for ((index, note) in notes.withIndex()) {
             var findNote = notes.find {it.id == id }
@@ -108,12 +113,15 @@ class NoteService {
         return throw NoteNotFoundException("Нет такой заметки с таким $id")
     }
 
-
-    fun readNotes() {
-        for (note in notes)
-            print(note)
-        println()
+    fun getComments(findNoteID: Int) : Collection<Comment> {
+        for ((index, note) in notes.withIndex()) {
+            var findAllCommentByNoteID = comments.filter{it.noteID == findNoteID}
+                println("Комментарии к заметкие найдены" + findAllCommentByNoteID)
+                return findAllCommentByNoteID
+            }
+        return throw NoteNotFoundException("Нет похожего $findNoteID")
     }
+
 
     fun readComments() {
         for (comment in comments)
@@ -138,13 +146,16 @@ fun main() {
     service.addNote(Note(2,"Оплатить ЖКХ"))
     service.editNote(2,"Оплатить не только ЖКХ!")
     service.addNote(Note(3, "Заметка на удаление"))
-    service.readNotes()
+    service.addNote(Note(2,"Создаться ли оно?"))
+    service.getNotes()
     service.deleteNote(3)
-    service.readNotes()
+    service.getNotes()
     service.getNoteById(2)
-    service.createComment(2, Comment(1,"Оплатил счетчики за воду"))
-    service.createComment(1, Comment(2,"Купил продукты на 3 дня"))
-    service.createComment(1, Comment(3, "Комментарий на удаление"))
+    service.getNotes()
+    service.createComment(Comment(1,2,"Оплатил счетчики за воду"))
+    service.createComment(Comment(2,1,"Купил продукты на 3 дня"))
+    service.createComment(Comment(3,1,"Комментарий на удаление"))
+    service.createComment(Comment(2,1,"Создасться ли коммент?"))
     service.readComments()
     service.editComment (2, 1,"Оплатил счет не только за воду, но и за электричество!")
     service.deleteComment(1,3)
@@ -152,4 +163,5 @@ fun main() {
     service.checkDeleteComments()
     service.restoreComment(1,3)
     service.readComments()
+    service.getComments(1)
 }

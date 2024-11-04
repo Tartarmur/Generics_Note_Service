@@ -11,7 +11,7 @@ class NoteServiceTest {
     fun notFoundDeleteComment() {
         var checkresult = NoteService()
         val createNote = checkresult.addNote(Note(1, "Прекрасный день"))
-        val createComment = checkresult.createComment(1, Comment(1, "Чудесный день!"))
+        val createComment = checkresult.createComment(Comment(1, 1,"Чудесный день!", ))
         val deleteComment = checkresult.deleteComment(1,5)
     }
 
@@ -20,7 +20,7 @@ class NoteServiceTest {
     fun rightDeleteComment() {
         var checkresult = NoteService()
         val createNote = checkresult.addNote(Note(1, "Прекрасный день"))
-        val createComment = checkresult.createComment(1, Comment(1, "Чудесный день!"))
+        val createComment = checkresult.createComment( Comment(1, 1,"Чудесный день!"))
         val deleteComment = checkresult.deleteComment(1,1)
     }
 
@@ -28,8 +28,8 @@ class NoteServiceTest {
     fun rightRestoreComment() {
         var checkresult = NoteService()
         val createNote = checkresult.addNote(Note(1, "Прекрасный день"))
-        val createComment = checkresult.createComment(1, Comment(1, "Чудесный день!"))
-        val newComment = checkresult.createComment(1, Comment(2,"Замечательный день!"))
+        val createComment = checkresult.createComment(Comment(1, 1,"Чудесный день!"))
+        val newComment = checkresult.createComment(Comment(2,1,"Замечательный день!"))
         val deleteComment = checkresult.deleteComment(1,2)
         val restoreComment = checkresult.restoreComment(1,2)
     }
@@ -39,8 +39,8 @@ class NoteServiceTest {
     fun notFoundRestoreComment() {
         var checkresult = NoteService()
         val createNote = checkresult.addNote(Note(1, "Прекрасный день"))
-        val createComment = checkresult.createComment(1, Comment(1, "Чудесный день!"))
-        val newComment = checkresult.createComment(1, Comment(2,"Замечательный день!"))
+        val createComment = checkresult.createComment(Comment(1, 1,"Чудесный день!"))
+        val newComment = checkresult.createComment(Comment(2,1,"Замечательный день!"))
         val deleteComment = checkresult.deleteComment(1,2)
         val restoreComment = checkresult.restoreComment(1,5)
     }
